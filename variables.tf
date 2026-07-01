@@ -1,32 +1,19 @@
-variable "location" {}
-variable "resource_group_name" {}
-variable "network_rg_name" {}
-variable "vnet_name" {}
-variable "subnet_name" {}
+variable "subscription_id" {}
 
-variable "vm_name" {
-  default = "rhel-wordpress-01"
-}
-
-variable "vm_size" {
-  default = "Standard_B2s"
+variable "location" {
+  default = "East US"
 }
 
 variable "admin_username" {
-  default = "azureadmin"
+  default = "azureuser"
 }
 
 variable "ssh_public_key" {}
 
-variable "admin_source_ip" {
-  default = "*"
+variable "db_admin" {
+  default = "wpadmin"
 }
 
-variable "wordpress_domain" {
-  default = "wordpress.example.com"
-}
-
-variable "tags" {
-  type    = map(string)
-  default = {}
+variable "db_password" {
+  sensitive = true
 }

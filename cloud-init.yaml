@@ -4,60 +4,24 @@ package_update: true
 package_upgrade: true
 
 packages:
-  - nginx
+  - apache2
   - php
-  - php-fpm
-  - php-mysqlnd
-  - php-json
-  - php-gd
-  - php-mbstring
-  - php-xml
-  - php-curl
-  - mariadb-server
+  - php-mysql
+  - mysql-client
+  - unzip
   - wget
-  - tar
 
 runcmd:
-  - systemctl enable nginx
-  - systemctl enable php-fpm
-  - systemctl enable mariadb
-
-  - systemctl start nginx
-  - systemctl start php-fpm
-  - systemctl start mariadb
-
-  - mysql -e "CREATE DATABASE wordpress;"
-  - mysql -e "CREATE USER 'wpuser'@'localhost' IDENTIFIED BY 'ChangeMe123!';"
-  - mysql -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wpuser'@'localhost';"
-  - mysql -e "FLUSH PRIVILEGES;"
-
+  - systemctl enable apache2
+  - systemctl start apache2
   - cd /tmp
-  - wget https://wordpress.org/latest.tar.gz
-  - tar -xzf latest.tar.gz
-  - cp -R wordpress/* /usr/share/nginx/html/
-
-  - chown -R nginx:nginx /usr/share/nginx/html
-
-  - |
-    cat > /etc/nginx/conf.d/wordpress.conf <<EOF
-    server {
-      listen 80;
-      server_name ${wp_domain};
-
-      root /usr/share/nginx/html;
-      index index.php index.html;
-
-      location / {
-        try_files \$uri \$uri/ /index.php?\$args;
-      }
-
-      location ~ \.php$ {
-        include fastcgi_params;
-        fastcgi_pass unix:/run/php-fpm/www.sock;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-      }
-    }
-    EOF
-
-  - systemctl restart php-fpm
-  - systemctl restart nginx
+  - wget https://wordpress.org/latest.zip
+  - unzip latest.zip
+  - cp -r wordpress/* /var/www/html/
+  - chown -R www-data:www-data /var/www/html
+  - cp /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+  - sed -i "s/database_name_here/${db_name}/" /var/www/html/wp-config.php
+  - sed -i "s/username_here/${db_user}/" /var/www/html/wp-config.php
+  - sed -i "s/password_here/${db_pass}/" /var/www/html/wp-config.php
+  - sed -i "s/localhost/${db_host}/" /var/www/html/wp-config.php
+  - systemctl restart apache2
