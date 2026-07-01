@@ -1,19 +1,28 @@
-variable "subscription_id" {}
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+}
 
 variable "location" {
-  default = "East US"
+  description = "Azure region"
+  type        = string
+  default     = "East US"
+}
+
+variable "vm_size" {
+  description = "Azure VM size"
+  type        = string
+  default     = "Standard_B1s"
 }
 
 variable "admin_username" {
-  default = "azureuser"
+  description = "Linux administrator username"
+  type        = string
+  default     = "azureuser"
 }
 
-variable "ssh_public_key" {}
-
-variable "db_admin" {
-  default = "wpadmin"
-}
-
-variable "db_password" {
-  sensitive = true
+variable "public_key_path" {
+  description = "Path to your SSH public key"
+  type        = string
+  default     = "~/.ssh/id_rsa.pub"
 }
